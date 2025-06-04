@@ -1,0 +1,76 @@
+//estado inicial
+#define T_INICIO //depois adicionar os valores para teste
+#define T_FIM_DO_MUNDO 
+#define N_TAMANHO_DO_MUNDO
+#define N_HABILIDADES
+#define N_HEROIS
+#define N_BASES
+#define N_MISSOES
+#define N_COMPOSTOS_V
+
+//codigo dos eventos
+#define CHEGA 1
+#define ESPERA 2
+#define DESISTE 3
+#define AVISA 4
+#define ENTRA 5
+#define SAI 6
+#define VIAJA 7
+#define MORRE 8
+#define MISSAO 9
+#define FIM 10
+
+//estrutura de local
+struct local {
+    int x;
+    int y;
+};
+
+//estrutura do heroi
+struct heroi {
+    int id_heroi;
+    struct cjto_t *habilidades;
+    int paciencia;
+    int velocidade;
+    int experiencia;
+    int base;
+    int vivo;
+};
+
+//estrutura da base
+struct base {
+    int id_base;
+    int lotacao;
+    struct cjto_t *presentes; //lista de herois presentes na base
+    struct fila_t *espera; //fila de espera da base
+    struct local coordenadas;
+};
+
+//estrutura da missao
+struct missao {
+    int id_missao;
+    struct cjto_t *habilidades_req;
+};
+
+//estrutura do mundo
+struct mundo {
+    int n_herois; //numero total de herois
+    struct heroi herois[N_HEROIS]; //vetor com todos os herois
+
+    int n_bases;
+    struct base bases[N_BASES];
+
+    int n_missoes;
+    struct missao missoes[N_MISSOES];
+
+    int n_habilidades;
+
+    int n_compostos_v;
+
+    struct local tamanho_mundo;
+
+    int relogio;
+
+    //lista de eventos futuros usando fila de prioridades
+    struct fprio_t *lef;
+}
