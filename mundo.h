@@ -93,3 +93,21 @@ int aleat( int min, int max);
 //calcula distancia entre os pontos 
 int calcula_distancia(struct local a, struct local b);
 
+//cria e inicializa estruturas um novo evento
+struct evento cria_evento(int tempo, int tipo, int info1, int info2);
+
+//agenda um evento inserindo ele na lef
+void agenda_evento(struct mundo *m, int tempo, int tipo, int info1, int info2);
+
+//destroi e libera memoria de um evento
+struct evento destroi_evento(struct evento *ev);
+
+//cria e inicializa as estruturas dos mundo
+struct mundo cria_mundo ();
+
+//cria o vetor de herois
+struct heroi cria_heroi (struct mundo *m, int id);
+
+
+
+

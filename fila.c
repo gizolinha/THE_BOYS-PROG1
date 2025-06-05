@@ -118,7 +118,6 @@ void fila_imprime (struct fila_t *f) {
     struct fila_nodo_t *atual = f->prim;
 
     while (atual) {
-        //PRECISA MESMO IMPRIMIR DESSSA FORMA???????????????
         printf("%d ", *(int *)atual->item);  // Desreferenciando para imprimir o valor inteiro
         atual = atual->prox;
     }
