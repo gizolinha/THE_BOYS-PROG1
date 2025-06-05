@@ -20,6 +20,10 @@
 #define MISSAO 9
 #define FIM 10
 
+//status dos herois
+#define MORTO 0
+#define VIVO 1
+
 //estrutura de local
 struct local {
     int x;
@@ -34,7 +38,7 @@ struct heroi {
     int velocidade;
     int experiencia;
     int base;
-    int vivo;
+    int status;
 };
 
 //estrutura da base
@@ -70,7 +74,11 @@ struct mundo {
     struct local tamanho_mundo;
 
     int relogio;
-
-    //lista de eventos futuros usando fila de prioridades
-    struct fprio_t *lef;
 }
+
+//retorna um inteiro aleatorio entre min e max
+int aleat( int min, int max);
+
+//calcula distancia entre os pontos 
+int calcula_distancia(struct local a, struct local b);
+
