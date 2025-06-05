@@ -33,7 +33,7 @@ struct fila_t *fila_destroi (struct fila_t *f) {
     while (atual != NULL) {
         prox = atual->prox;
         free(atual->item);
-        free(atual); //NAO SEI SE SAO DOIS FREES MESMO VAMOS TESTAR
+        free(atual); 
         
         atual = prox;
     }

@@ -43,11 +43,11 @@ struct heroi {
 
 //estrutura da base
 struct base {
-    int id_base;
-    int lotacao;
+    int id_base; //id da base
+    int lotacao; //numero maximo de herois na base
     struct cjto_t *presentes; //lista de herois presentes na base
     struct fila_t *espera; //fila de espera da base
-    struct local coordenadas;
+    struct local coordenadas; // coordenadas da base
 };
 
 //estrutura da missao
@@ -71,10 +71,21 @@ struct mundo {
 
     int n_compostos_v;
 
-    struct local tamanho_mundo;
+    int n_tamanho_mundo;
 
     int relogio;
-}
+
+    struct fprio_t *lef;
+};
+
+//estrutura do evento
+struct evento {
+    int tempo; //quando acontece o evento
+    int tipo; //tipo do evento
+    int info1; // guarda dados do evento (base, heroi, etc)
+    int info2;  //guarda dados do evento
+};
+
 
 //retorna um inteiro aleatorio entre min e max
 int aleat( int min, int max);
