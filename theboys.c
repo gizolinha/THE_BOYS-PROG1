@@ -1,20 +1,28 @@
-// programa principal do projeto "The Boys - 2024/2"
-// Autor: xxxxx, GRR xxxxxx
-
-// seus #includes vão aqui
+#include <stdio.h>
+#include <stdlib.h>
+#include "fila.h"
+#include "fprio.h"
+#include "mundo.h"
+#include "conjunto.h"
 
 // seus #defines vão aqui
 
 // minimize o uso de variáveis globais
 
 // programa principal
-int main ()
-{
+int main () {
   // iniciar o mundo
+  struct mundo m;
+  struct evento *ev;
 
-  // executar o laço de simulação
+  srand(0);
 
-  // destruir o mundo
+  m = cria mundo;
+
+
+
+
+
 
   return (0) ;
 }

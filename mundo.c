@@ -7,12 +7,12 @@
 #include "fprio.h"
 #include "conjunto.h"
 
-//retorna um inteiro aleatorio entre min e max
+//GERA UM INTEIRO ALEATORIO
 int aleat( int min, int max) {
     return min + rand() % (max - min + 1);
 }
 
-//calcula distancia entre os pontos 
+//CALCULA DISTANCIA CARTESIANA ENTRE DOIS PONTOS
 int calcula_distancia(struct local a, struct local b) {
     double cd;
 
@@ -21,7 +21,7 @@ int calcula_distancia(struct local a, struct local b) {
     return (int)sqrt(cd);
 }
 
-//cria e inicializa estruturas um novo evento
+//CRIA E INICIALIZA AS ESTRUTURAS DE UM NOVO EVENTO
 struct evento *cria_evento(int tempo, int tipo, int info1, int info2) {
     struct evento *novo_evento = malloc(sizeof(struct evento));
 
@@ -35,7 +35,7 @@ struct evento *cria_evento(int tempo, int tipo, int info1, int info2) {
 
 }
 
-// cria um evento usando a cria_evento e agenda inserindo ele na lef (fprio)
+//CRIA UM NOVO EVENTO USANDO A CRIA_EVENTO E INSERE ELE NA LEF(FPRIO)
 void agenda_evento(struct mundo *m, int tempo, int tipo, int info1, int info2) {
     //caso de m ou lef invalidos
     if (m == NULL || m->lef == NULL) {
@@ -56,7 +56,7 @@ void agenda_evento(struct mundo *m, int tempo, int tipo, int info1, int info2) {
         destroi_evento(ev);
 }
 
-//destroi e libera memoria de um evento
+//DESTROI E LIBERA MEMORIA DE UM EVENTO
 void destroi_evento(struct evento *ev) {
     //caso ev for nulo
     if (ev == NULL)
@@ -65,7 +65,7 @@ void destroi_evento(struct evento *ev) {
     free(ev);
 }
 
-//cria e inicializa as estruturas dos mundo
+//CRIA E INICIALIZA A ESTRUTURAS DO MUNDO
 struct mundo cria_mundo() {
     struct mundo m;
 
@@ -78,20 +78,20 @@ struct mundo cria_mundo() {
     m.n_tamanho_mundo = N_TAMANHO_MUNDO;
     m.relogio = T_INICIO;
 
-    //cria e inicializa vetor de herois
+    //cria e inicializa vetor de herois usando a cria_heroi
     for (int i = 0; i < m.n_herois)
         m.herois[i] = cria_heroi(&m, i);
 
-    //cria e inicializa o vetor de bases
+    //cria e inicializa o vetor de bases usando a cria_base
     for (int i = 0; i < m.n_bases; i++);
         m.bases[i] = cria_base(&m, i);
     
-    //cria e inicializa o vetor de missoes
+    //cria e inicializa o vetor de missoes usando a cria_missoes
     for (int i = 0; i < m.n_missoes; i++);
         m.missoes[i] = cria_missao(&m, i);
 
     //cria habilidades
-    m.habilidades = cjt_cria(m.n_habilidades);
+    m.habilidades = cjto_cria(m.n_habilidades);
     //inicializa
     for (int i = 0; i < m.n_habilidades; i++)
         cjto_insere(m.habilidades, i);
@@ -125,14 +125,14 @@ void destroi_mundo(struct mundo *m) {
     cjto_destroi(w->lef);
 }
 
-//cria o vetor de herois
+//cria cria cada heroi
 struct heroi cria_heroi(struct mundo *m, int id) {
 
     heroi.id = id;
     heroi.experiencia = 0;
     heroi.paciencia = aleat(0,100);
     heroi.velocidade = aleat(50,500);
-    heroi.habilidades = cjt_cria(N_HABILIDADES);
+    heroi.habilidades = cjto_cria(N_HABILIDADES);
     //sorteia as habilidades e insere no conjunto de habilidades do heroi
     for(int i = 0; i < aleat(1,3); i++)
         cjto_insere(heroi.habilidades, aleat(0, N_HABILIDADES -1));
@@ -143,12 +143,12 @@ struct heroi cria_heroi(struct mundo *m, int id) {
     return heroi;
 }
 
-//cria o vetor de bases
+//cria cada base
 struct base cria_base(struct mundo *m, int id) {
 
     base.id = id;
     base.lotacao = aleat(3,10);
-    base.presentes = cjt_cria(base.lotacao);
+    base.presentes = cjto_cria(base.lotacao);
     base.espera = fila_cria();
     base.coordenadas.x = aleat(0, m->n_tamanho_mundo);
     base.coordenadas.y = aleat(0, m->n_tamanho_mundo);
@@ -156,12 +156,12 @@ struct base cria_base(struct mundo *m, int id) {
     return base;
 }
 
-//cria o vetor de missoes
+//cria cada missao
 struct missao cria_missao(struct mundo *m, int id) {
     //testar interior da funcao depois
     missao.id = id;
     int num_hab = aleat(6,10);
-    missao.habilidades_req = cjt_cria(N_HABILIDADES);
+    missao.habilidades_req = cjto_cria(N_HABILIDADES);
     for (int i = 0; i < num_hab; i++)
         cjto_insere(missao.habilidades_req, aleat(0, num_hab));
     
@@ -194,7 +194,8 @@ void eventos_iniciais(struct mundo *m) {
 
 //eventos da simulacao
 
-//evento de chegada do heroi na base
+//EVENTO DE CHEGADA DO HEROI NA BASE
+//CRIA EVENTO AVISA, ESPERA OU DESISTE
 void chega(struct mundo *m, int tempo, int heroi, int base) {
 
 
@@ -205,6 +206,8 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
     printf("(%2d/%2d) DESISTE \n", presentes, lotacao);
 }
 
+//EVENTO CASO O HEROI DECIDA ESPERAR NA FILA DA BASE
+//CRIA O EVENTO AVISA
 void espera(struct mundo *m, int tempo, int heroi, int base) {
 
     printf("%6d: ESPERA HEROI %2d BASE %d", tempo, heroi, base);
@@ -212,16 +215,73 @@ void espera(struct mundo *m, int tempo, int heroi, int base) {
 
 }
 
+//EVENTO CASO O HEROI DESISTA  DE ESPERAR NA FILA DA BASE
+//CRIA O EVENTO VIAJA
 void desiste(struct mundo *m, int tempo, inte heroi, int base) {
 
     printf("%6d: DESISTE HEROI %2d BASE %d\n", tempo, heroi, base);
 
 }
 
-void avisa(struct mundo *m, int tempo, int base) {
+//EVENTO QUE AVISA O PORTEIRO DA BASE
+//SE INSERIR NA BASE, CRIA O EVENTO ENTRA
+void avisa(struct mundo *m, int tempo, int base) { //TEM QUE PASSAR HEROI COMO PARAMETRO???
 
     printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
     printf("(%2d/%2d) FILA ", presentes, lotacao);
 
     printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
+}
+
+//HEROI EH ADMITIDO E ENTRA NA BASE
+//CRIA O EVENTO SAI
+void entra(struct mundo *m, int tempo, int heroi, int base) {
+
+
+    printf("%6d: ENTRA HEROI %2d BASE %d");
+    printf("(%2d/%2d) SAI %d\n", presentes, lotacao, (tempo + permanencia));
+}
+
+//HEROI SAI DA BASE
+//CRIA EVENTO VIAJA
+//CRIA EVENTO AVISA
+void sai(struct mundo *m, int tempo, int heroi, int base) {
+
+    printf("%6d: SAI HEROI %2d BASE %d", tempo, heroi, base);
+    printf("(%2d/%2d)\n", cjto_card(base.presentes, b.lotacao)); //cjtocard informa o numero de itens do conjunto
+
+}
+
+//HEROI VIAJA PARA OUTRA BASE
+//CRIA EVENTO CHEGA
+void viaja(struct mundo *m, int tempo, inte heroi, int base) {
+
+    printf("%6d: VIAJA HEROI %2d BASE %d BASE %d", tempo, heroi, heroi.base, base);
+    printf("DIST %d VEL %d CHEGA %d\n", distancia, heroi.velocidade, tempo + duracao);
+}
+
+//HEROI MORRE QUANDO USA O COMPOSTO V
+//CRIA EVENTO AVISA???
+void morre(struct mundo *m, int tempo, int heroi, int missao) {
+
+    printf("%6d: MORRE HEROI %2d MISSAO %d\n", tempo, heroi, missao);
+}
+
+//VE SE UMA BASE ESTA APTA PARA MISSAO
+//BASE MAIS PROXIMA TEM PRIORIDADE E SE TEM HABILIDADES NECESSARIAS
+//SO PODE USAR COMPOSTO V SE T FOR MULT DE 2500 
+//SE FOR USADO DECREMENTAR OS COMPOSROS V
+//HEROIS GANHAM XP
+//COMO CONTAR AS MISSOES CUMPRIDAS???
+//COMO CONTAR AS TENTATIVAS??
+//DEIXAR POR ULTIMO, CONFUSO
+void missao(struct mundo *m, int tempo, int missao) {
+
+}
+
+//ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
+//IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
+//DEIXAR POR ULTIMO TBM
+void fim(struct mundo *m) {
+
 }
