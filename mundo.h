@@ -1,12 +1,12 @@
 //estado inicial
-#define T_INICIO //depois adicionar os valores para teste
-#define T_FIM_DO_MUNDO 
-#define N_TAMANHO_DO_MUNDO
-#define N_HABILIDADES
-#define N_HEROIS
-#define N_BASES
-#define N_MISSOES
-#define N_COMPOSTOS_V
+#define T_INICIO 0
+#define T_FIM_DO_MUNDO 525600
+#define N_TAMANHO_MUNDO 2000
+#define N_HABILIDADES 10
+#define N_HEROIS N_HABILIDADES * 5
+#define N_BASES N_HEROIS / 5
+#define N_MISSOES T_FIM_DO_MUNDO / 100
+#define N_COMPOSTOS_V N_HABILIDADES * 3
 
 //codigo dos eventos
 #define CHEGA 1
@@ -32,7 +32,7 @@ struct local {
 
 //estrutura do heroi
 struct heroi {
-    int id_heroi;
+    int id;
     struct cjto_t *habilidades;
     int paciencia;
     int velocidade;
@@ -43,7 +43,7 @@ struct heroi {
 
 //estrutura da base
 struct base {
-    int id_base; //id da base
+    int id; //id da base
     int lotacao; //numero maximo de herois na base
     struct cjto_t *presentes; //lista de herois presentes na base
     struct fila_t *espera; //fila de espera da base
@@ -52,8 +52,9 @@ struct base {
 
 //estrutura da missao
 struct missao {
-    int id_missao;
+    int id;
     struct cjto_t *habilidades_req;
+    struct local coordenadas;
 };
 
 //estrutura do mundo
@@ -68,6 +69,7 @@ struct mundo {
     struct missao missoes[N_MISSOES];
 
     int n_habilidades;
+    struct cjto_t *habilidades;
 
     int n_compostos_v;
 
@@ -94,19 +96,28 @@ int aleat( int min, int max);
 int calcula_distancia(struct local a, struct local b);
 
 //cria e inicializa estruturas um novo evento
-struct evento cria_evento(int tempo, int tipo, int info1, int info2);
+struct evento *cria_evento(int tempo, int tipo, int info1, int info2);
 
 //agenda um evento inserindo ele na lef
-void agenda_evento(struct mundo *m, int tempo, int tipo, int info1, int info2);
+struct evento *agenda_evento(struct mundo *m, int tempo, int tipo, int info1, int info2);
 
 //destroi e libera memoria de um evento
-struct evento destroi_evento(struct evento *ev);
+struct evento *destroi_evento(struct evento *ev);
 
 //cria e inicializa as estruturas dos mundo
 struct mundo cria_mundo ();
 
 //cria o vetor de herois
 struct heroi cria_heroi (struct mundo *m, int id);
+
+//cria cada base
+struct base cria_base(struct mundo *m, int id);
+
+//cria cada missao
+struct missao cria_missao(struct mundo *m, int id);
+
+//crias os eventos iniciais e insere na lef
+void eventos_iniciais(struct mundo *m);
 
 
 

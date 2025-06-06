@@ -11,14 +11,14 @@
 
 // programa principal
 int main () {
-  // iniciar o mundo
+  /* iniciar o mundo
   struct mundo m;
   struct evento *ev;
 
   srand(0);
 
-  m = cria mundo;
-
+  m = cria_mundo;
+*/
 
 
 
