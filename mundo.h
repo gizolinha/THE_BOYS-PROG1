@@ -85,7 +85,7 @@ struct evento {
     int tempo; //quando acontece o evento
     int tipo; //tipo do evento
     int info1; // guarda dados do evento (base, heroi, etc)
-    int info2;  //guarda dados do evento
+    int info2;  //guarda dados do evento (base,heroi, etc)
 };
 
 

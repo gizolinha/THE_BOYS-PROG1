@@ -8,7 +8,7 @@
 #include "conjunto.h"
 
 //GERA UM INTEIRO ALEATORIO
-int aleat( int min, int max) {
+int aleat(int min, int max) {
     return min + rand() % (max - min + 1);
 }
 
@@ -115,7 +115,7 @@ void destroi_mundo(struct mundo *m) {
     }
 
     //destroi as habilidades de cada missao
-    for(int i_m = 0; i_m < m->n_missoes; i_m++) 
+    for(int i_m = 0; i_m < m->n_missoes; i_m++)
         cjto_destroi(m->missoes[i_m].habilidades_req);
 
     //destrois habilidades do mundo
@@ -202,38 +202,83 @@ void eventos_iniciais(struct mundo *m) {
 }
 
 
-/*
 //eventos da simulacao
 
 //EVENTO DE CHEGADA DO HEROI NA BASE
 //CRIA EVENTO AVISA, ESPERA OU DESISTE
 void chega(struct mundo *m, int tempo, int heroi, int base) {
 
+    struct heroi h;
+    struct base b;
+    int presentes_b, lotacao_b, espera_b, fila_espera;
 
-    printf("%6d: CHEGA HEROI %2d BASE %d", tempo, heroi, base);
-    printf("(%2d/%2d) ESPERA \n", presentes, lotacao);
+    //atribui as variaveis heroi e base passados como parametro nesse vento
+    h = m->herois[heroi];
+    b = m->bases[base];
 
-    printf("%6d: CHEGA HEROI %2d BASE %d", tempo, heroi, base);
-    printf("(%2d/%2d) DESISTE \n", presentes, lotacao);
+    //quantos herois estao na base
+    presentes_b = cjto_card(b.presentes);
+    //tamanho da fila de espera
+    fila_espera = fila_tamanho(b.espera);
+    //lotação max da base
+    lotacao_b = b.lotacao;
+
+    //atualiza a abse do heroi
+    m->herois[heroi].base = base;
+
+    //se ha vagas na base e a fila de espera esta vazia
+    if ((presentes_b < lotacao_b) && (fila_tamanho(b.espera) == 0))
+        espera_b = 1;
+    else
+        espera_b = h.paciencia > (10 * fila_espera);
+
+    //se esperar cria evento espera
+    if (espera_b == 1) {
+        agenda_evento(m, tempo, ESPERA, heroi, base); //info1 e info2 sao heroi e base
+        printf("%6d: CHEGA HEROI %2d BASE %d", tempo, heroi, base);
+        printf("(%2d/%2d) ESPERA \n", presentes_b, lotacao_b);
+    }
+    //se não esperar cria evento desiste
+    else {
+        agenda_evento(m, tempo, DESISTE, heroi, base); //info1 e info2 sao heroi e base
+        printf("%6d: CHEGA HEROI %2d BASE %d", tempo, heroi, base);
+        printf("(%2d/%2d) DESISTE \n", presentes_b, lotacao_b);
+    }    
 }
+
 
 //EVENTO CASO O HEROI DECIDA ESPERAR NA FILA DA BASE
 //CRIA O EVENTO AVISA
-void espera(struct mundo *m, int tempo, int heroi, int base) {
+//ERRO AO IKNSERIR NA FILA DA BASE, PEDE PONTEIRO VOID E QUERO INSERIR UM INTEIRO
+void espera(struct mundo *m, int tempo, struct evento *ev, int base) {
 
     printf("%6d: ESPERA HEROI %2d BASE %d", tempo, heroi, base);
     printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); //REVER???????????????????
+
+    //insere heroi na fila da base
+    fila_insere(m->bases[base].espera, ev->info1); //passando um ponteiro para struct evento para info1 que no caso eh o id do heroi
+
+    //cria evento avisa para o porteiro
+    agenda_evento(m, tempo, AVISA, -1, base);
 
 }
 
 //EVENTO CASO O HEROI DESISTA  DE ESPERAR NA FILA DA BASE
 //CRIA O EVENTO VIAJA
-void desiste(struct mundo *m, int tempo, inte heroi, int base) {
+void desiste(struct mundo *m, int tempo, int heroi, int base) {
 
+    int destino;
+    
     printf("%6d: DESISTE HEROI %2d BASE %d\n", tempo, heroi, base);
 
+    //escolhe uma base aleatoria para o heroi viajar
+    destino = aleat(0, m->n_bases -1);
+
+    //cria evento viaja
+    agenda_evento(m, tempo, VIAJA, heroi, destino);
 }
 
+/*
 //EVENTO QUE AVISA O PORTEIRO DA BASE
 //SE INSERIR NA BASE, CRIA O EVENTO ENTRA
 void avisa(struct mundo *m, int tempo, int base) { //TEM QUE PASSAR HEROI COMO PARAMETRO???

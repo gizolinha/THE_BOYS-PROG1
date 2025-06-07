@@ -7,7 +7,6 @@
 
 // seus #defines vão aqui
 
-// minimize o uso de variáveis globais
 
 // programa principal
 int main () {
