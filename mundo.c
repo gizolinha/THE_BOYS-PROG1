@@ -254,7 +254,7 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
 void espera(struct mundo *m, int tempo, int heroi, int base) {
 
     printf("%6d: ESPERA HEROI %2d BASE %d", tempo, heroi, base);
-    printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); //REVER???????????????????
+    printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); 
 
     //insere heroi na fila da base
     fila_insere(m->bases[base].espera, &heroi);
@@ -279,16 +279,48 @@ void desiste(struct mundo *m, int tempo, int heroi, int base) {
     agenda_evento(m, tempo, VIAJA, heroi, destino);
 }
 
+//ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
+//IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
+//DEIXAR POR ULTIMO TBM
+void fim(struct mundo *m) {
+
+    struct heroi h;
+    printf("%6d: FIM\n", m->relogio);
+
+    for (int i = 0; i < m->n_herois; i++) {
+        h = m->herois[i];
+        printf("HEROI %d VIVO PAC %d VEL %4d EXP %4d HABS", i, h.paciencia, h.velocidade, h.experiencia);
+        cjto_imprime(h.habilidades);
+    }
+
+    destroi_mundo(m);
+}
+
 /*
 //EVENTO QUE AVISA O PORTEIRO DA BASE
 //SE INSERIR NA BASE, CRIA O EVENTO ENTRA
 void avisa(struct mundo *m, int tempo, int base) { //TEM QUE PASSAR HEROI COMO PARAMETRO???
 
+    struct base b;
+    int lotacao_b, heroi_b, presentes_b;
+    
+    //base do evento 
+    b = m->bases[base];
+    
+    lotacao_b = b.lotacao;
+    presentes_b = cjto_card(b.presentes);
+
     printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
     printf("(%2d/%2d) FILA ", presentes, lotacao);
 
+    //enquanto a base tiver vagas 
+    while (presentes_b <= lotacao_b && fila_tamanho(b.espera) == 0) {
+
+    }
+
     printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
 }
+
 
 //HEROI EH ADMITIDO E ENTRA NA BASE
 //CRIA O EVENTO SAI
@@ -336,10 +368,4 @@ void missao(struct mundo *m, int tempo, int missao) {
 
 }
 
-//ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
-//IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
-//DEIXAR POR ULTIMO TBM
-void fim(struct mundo *m) {
-
-}
 */

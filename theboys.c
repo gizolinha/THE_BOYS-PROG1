@@ -10,19 +10,37 @@
 
 // programa principal
 int main () {
-  /* iniciar o mundo
+  //iniciar o mundo
   struct mundo m;
   struct evento *ev;
+  int fim_simulacao;
 
   srand(0);
 
-  m = cria_mundo;
-*/
+  m = cria_mundo();
 
+  fim_simulacao = 0;
 
+  while (!fim_simulacao && (ev = fprio_retira(m.lef, &tipo, &tempo)) != NULL) { //como faz a fprio retira funcionar???
+      m.relogio = ev->tempo;
+      switch (ev->tipo) {
 
-
-
-  return (0) ;
+          case CHEGA:
+              chega(&m, ev->tempo, ev->info1, ev->info2);
+              break;
+          case ESPERA:
+              espera(&m, ev->tempo, ev->info1, ev->info2);
+              break;
+          case DESISTE:
+              desiste(&m, ev->tempo, ev->info1, ev->info2);
+              break;
+          case FIM:
+              fim(&m);
+              fim_simulacao = 1;
+              break;         
+      }
+      destroi_evento(ev);
+  }
+  return 1;
 }
 

@@ -77,7 +77,7 @@ struct mundo {
 
     int n_tamanho_mundo;
 
-    int relogio;
+    int relogio; //tempo do mundo
 
     struct fprio_t *lef;
 };
@@ -121,6 +121,24 @@ struct missao cria_missao(struct mundo *m, int id);
 //crias os eventos iniciais e insere na lef
 void eventos_iniciais(struct mundo *m);
 
+//EVENTO DE CHEGADA DO HEROI NA BASE
+//CRIA EVENTO AVISA, ESPERA OU DESISTE
+void chega(struct mundo *m, int tempo, int heroi, int base);
+
+//EVENTO CASO O HEROI DECIDA ESPERAR NA FILA DA BASE
+//CRIA O EVENTO AVISA
+//ERRO AO IKNSERIR NA FILA DA BASE
+void espera(struct mundo *m, int tempo, int heroi, int base);
+
+
+//EVENTO CASO O HEROI DESISTA  DE ESPERAR NA FILA DA BASE
+//CRIA O EVENTO VIAJA
+void desiste(struct mundo *m, int tempo, int heroi, int base);
+
+//ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
+//IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
+//DEIXAR POR ULTIMO TBM
+void fim(struct mundo *m);
 
 
 
