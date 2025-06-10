@@ -40,6 +40,7 @@ struct evento *agenda_evento(struct mundo *m, int tempo, int tipo, int info1, in
     //caso de m ou lef invalidos
     if(m == NULL || m->lef == NULL) {
         printf("erro, mundo ou lef invalidos (agenda_evento)"); //printf apenas para testes
+        return NULL;
     }
     
     //cria um novo evento
@@ -249,14 +250,14 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
 
 //EVENTO CASO O HEROI DECIDA ESPERAR NA FILA DA BASE
 //CRIA O EVENTO AVISA
-//ERRO AO IKNSERIR NA FILA DA BASE, PEDE PONTEIRO VOID E QUERO INSERIR UM INTEIRO
+//ERRO AO IKNSERIR NA FILA DA BASE
 void espera(struct mundo *m, int tempo, int heroi, int base) {
 
     printf("%6d: ESPERA HEROI %2d BASE %d", tempo, heroi, base);
     printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); //REVER???????????????????
 
     //insere heroi na fila da base
-    fila_insere(m->bases[base].espera, &heroi); //passando um ponteiro para struct evento para info1 que no caso eh o id do heroi
+    fila_insere(m->bases[base].espera, &heroi);
 
     //cria evento avisa para o porteiro
     agenda_evento(m, tempo, AVISA, -1, base);

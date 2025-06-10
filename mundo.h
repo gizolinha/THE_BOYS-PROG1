@@ -55,6 +55,8 @@ struct missao {
     int id;
     struct cjto_t *habilidades_req;
     struct local coordenadas;
+    int tentativas;
+    int cumpridas;
 };
 
 //estrutura do mundo
