@@ -246,8 +246,9 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
 //CRIA O EVENTO AVISA
 //ERRO AO IKNSERIR NA FILA DA BASE
 void espera(struct mundo *m, int tempo, int heroi, int base) {
-
-    int *ptr_heroi = &heroi;
+    //alocar dinamicamente para evitar erro no free (destroi mundo)
+    int *ptr_heroi = malloc(sizeof(int));
+    *ptr_heroi = heroi;
 
     printf("%6d: ESPERA HEROI %2d BASE %d ", tempo, heroi, base);
     printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); 
