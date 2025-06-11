@@ -110,7 +110,7 @@ struct evento *destroi_evento(struct evento *ev);
 struct mundo cria_mundo ();
 
 //cria o vetor de herois
-struct heroi cria_heroi (struct mundo *m, int id);
+struct heroi cria_heroi (int id);
 
 //cria cada base
 struct base cria_base(struct mundo *m, int id);

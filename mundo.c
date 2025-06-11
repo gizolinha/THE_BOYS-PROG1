@@ -80,7 +80,7 @@ struct mundo cria_mundo() {
 
     //cria e inicializa vetor de herois usando a cria_heroi
     for(int i = 0; i < m.n_herois; i++)
-        m.herois[i] = cria_heroi(&m, i);
+        m.herois[i] = cria_heroi(i);
 
     //cria e inicializa o vetor de bases usando a cria_base
     for(int i = 0; i < m.n_bases; i++)
@@ -127,7 +127,7 @@ void destroi_mundo(struct mundo *m) {
 
 
 //cria cria cada heroi
-struct heroi cria_heroi(struct mundo *m, int id) {
+struct heroi cria_heroi(int id) {
 
     struct heroi h;
 
@@ -135,10 +135,7 @@ struct heroi cria_heroi(struct mundo *m, int id) {
     h.experiencia = 0;
     h.paciencia = aleat(0,100);
     h.velocidade = aleat(50,500);
-    h.habilidades = cjto_cria(N_HABILIDADES);
-    //sorteia as habilidades e insere no conjunto de habilidades do heroi
-    for(int i = 0; i < aleat(1,3); i++)
-        cjto_insere(m->habilidades, aleat(0, N_HABILIDADES -1));
+    h.habilidades = cjto_aleat(aleat(1,3), N_HABILIDADES -1);
     //heroi inicializa sem base
     h.base = -1;
     h.status = VIVO;
@@ -168,11 +165,8 @@ struct missao cria_missao(struct mundo *m, int id) {
 
     //testar interior da funcao depois
     mi.id = id;
-    int num_hab = aleat(6,10);
-    mi.habilidades_req = cjto_cria(N_HABILIDADES);
-    for(int i = 0; i < num_hab; i++)
-        cjto_insere(m->habilidades, aleat(0, num_hab));
-    
+    mi.habilidades_req = cjto_aleat(aleat(6,10), N_HABILIDADES -1);
+
     mi.coordenadas.x = aleat(0,m->n_tamanho_mundo);
     mi.coordenadas.y = aleat(0,m->n_tamanho_mundo);
 
@@ -236,7 +230,7 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
     //se esperar cria evento espera
     if (espera_b == 1) {
         agenda_evento(m, tempo, ESPERA, heroi, base); //info1 e info2 sao heroi e base
-        printf("%6d: CHEGA HEROI %2d BASE %d", tempo, heroi, base);
+        printf("%6d: CHEGA HEROI %2d BASE %d ", tempo, heroi, base);
         printf("(%2d/%2d) ESPERA \n", presentes_b, lotacao_b);
     }
     //se não esperar cria evento desiste
@@ -253,11 +247,13 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
 //ERRO AO IKNSERIR NA FILA DA BASE
 void espera(struct mundo *m, int tempo, int heroi, int base) {
 
-    printf("%6d: ESPERA HEROI %2d BASE %d", tempo, heroi, base);
+    int *ptr_heroi = &heroi;
+
+    printf("%6d: ESPERA HEROI %2d BASE %d ", tempo, heroi, base);
     printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); 
 
     //insere heroi na fila da base
-    fila_insere(m->bases[base].espera, &heroi);
+    fila_insere(m->bases[base].espera, ptr_heroi);
 
     //cria evento avisa para o porteiro
     agenda_evento(m, tempo, AVISA, -1, base);
@@ -289,8 +285,9 @@ void fim(struct mundo *m) {
 
     for (int i = 0; i < m->n_herois; i++) {
         h = m->herois[i];
-        printf("HEROI %d VIVO PAC %d VEL %4d EXP %4d HABS", i, h.paciencia, h.velocidade, h.experiencia);
+        printf("HEROI %d VIVO PAC %d VEL %4d EXP %4d HABS [ ", i, h.paciencia, h.velocidade, h.experiencia);
         cjto_imprime(h.habilidades);
+        printf(" ]\n");
     }
 
     destroi_mundo(m);
