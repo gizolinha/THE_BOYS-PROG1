@@ -50,7 +50,7 @@ struct evento *agenda_evento(struct mundo *m, int tempo, int tipo, int info1, in
     }
 
     //insere ele na lef
-    if(fprio_insere(m->lef, ev, tipo, tempo) != 0) {
+    if(fprio_insere(m->lef, ev, tipo, tempo) == -1) {
         printf("erro, falha ao inserir evento na lef (agenda_evento)"); //printf apenas para testes
         destroi_evento(ev);
     }

@@ -6,14 +6,14 @@
 #include "conjunto.h"
 
 // seus #defines vão aqui
-
-
 // programa principal
 int main () {
   //iniciar o mundo
   struct mundo m;
   struct evento *ev;
   int fim_simulacao;
+  int tempo_atual = 0; 
+  int tipo_atual = 0;
 
   srand(0);
 
@@ -21,7 +21,7 @@ int main () {
 
   fim_simulacao = 0;
 
-  while (!fim_simulacao && (ev = fprio_retira(m.lef, &tipo, &tempo)) != NULL) { //como faz a fprio retira funcionar???
+  while (!fim_simulacao && (ev = fprio_retira(m.lef, &tipo_atual, &tempo_atual))) { //como faz a fprio retira funcionar???
       m.relogio = ev->tempo;
       switch (ev->tipo) {
 
