@@ -37,6 +37,9 @@ int main () {
           case AVISA:
               avisa(&m, ev->tempo, ev->info1, ev->info2);
               break;
+          case ENTRA:
+              entra(&m, ev->tempo, ev->info1, ev->info2);
+              break;
           case FIM:
               fim(&m);
               fim_simulacao = 1;

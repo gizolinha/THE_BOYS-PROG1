@@ -139,6 +139,10 @@ void desiste(struct mundo *m, int tempo, int heroi, int base);
 //SE INSERIR NA BASE, CRIA O EVENTO ENTRA
 void avisa(struct mundo *m, int tempo, int base, int heroi);
 
+//HEROI EH ADMITIDO E ENTRA NA BASE
+//CRIA O EVENTO SAI
+void entra(struct mundo *m, int tempo, int heroi, int base);
+
 //ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
 //IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
 //DEIXAR POR ULTIMO TBM

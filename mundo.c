@@ -257,7 +257,7 @@ void espera(struct mundo *m, int tempo, int heroi, int base) {
     fila_insere(m->bases[base].espera, ptr_heroi);
 
     //cria evento avisa para o porteiro
-    agenda_evento(m, tempo, AVISA, -1, base);
+    agenda_evento(m, tempo, AVISA, base, heroi);
 
 }
 
@@ -291,8 +291,9 @@ void avisa(struct mundo *m, int tempo, int base, int heroi) {
     presentes_b = cjto_card(b.presentes); //quantos herois ha na base
 
     printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
-    printf("(%2d/%2d) FILA ", presentes_b, lotacao_b);
+    printf("(%2d/%2d) FILA [ ", presentes_b, lotacao_b);
     fila_imprime(b.espera);
+    printf("]\n");
 
     //enquanto a base tiver vagas 
     while (presentes_b <= lotacao_b && fila_tamanho(b.espera) == 0) {
@@ -304,6 +305,30 @@ void avisa(struct mundo *m, int tempo, int base, int heroi) {
         agenda_evento(m, tempo, ENTRA, heroi, base);
         printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
     }
+}
+
+//HEROI EH ADMITIDO E ENTRA NA BASE
+//CRIA O EVENTO SAI
+void entra(struct mundo *m, int tempo, int heroi, int base) {
+
+    struct base b;
+    struct heroi h;
+    int permanencia_b, presentes_b, lotacao_b;
+
+    //base e heroi do evento
+    b = m->bases[base];
+    h = m->herois[heroi];
+
+    presentes_b = cjto_card(b.presentes);
+    lotacao_b = b.lotacao;
+
+    permanencia_b = 15 + (h.paciencia * aleat(1, 20));
+
+    //cria evento sai
+    agenda_evento(m, (tempo + permanencia_b), SAI, heroi, base);
+
+    printf("%6d: ENTRA HEROI %2d BASE %d", tempo, heroi, base);
+    printf("(%2d/%2d) SAI %d\n", presentes_b, lotacao_b, (tempo + permanencia_b));
 }
 
 
@@ -326,16 +351,9 @@ void fim(struct mundo *m) {
 }
 
 
+
+
 /*
-//HEROI EH ADMITIDO E ENTRA NA BASE
-//CRIA O EVENTO SAI
-void entra(struct mundo *m, int tempo, int heroi, int base) {
-
-
-    printf("%6d: ENTRA HEROI %2d BASE %d");
-    printf("(%2d/%2d) SAI %d\n", presentes, lotacao, (tempo + permanencia));
-}
-
 //HEROI SAI DA BASE
 //CRIA EVENTO VIAJA
 //CRIA EVENTO AVISA
