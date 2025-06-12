@@ -150,7 +150,7 @@ struct base cria_base(struct mundo *m, int id) {
 
     b.id = id;
     b.lotacao = aleat(3,10);
-    b.presentes = cjto_cria(b.lotacao);
+    b.presentes = cjto_cria(N_HEROIS - 1);
     b.espera = fila_cria();
     b.coordenadas.x = aleat(0, m->n_tamanho_mundo);
     b.coordenadas.y = aleat(0, m->n_tamanho_mundo);
@@ -276,6 +276,37 @@ void desiste(struct mundo *m, int tempo, int heroi, int base) {
     agenda_evento(m, tempo, VIAJA, heroi, destino);
 }
 
+
+//EVENTO QUE AVISA O PORTEIRO DA BASE
+//SE INSERIR NA BASE, CRIA O EVENTO ENTRA
+void avisa(struct mundo *m, int tempo, int base, int heroi) { 
+
+    struct base b;
+    int lotacao_b, presentes_b;
+    
+    //base do evento 
+    b = m->bases[base];
+    
+    lotacao_b = b.lotacao; //lotacao maxima
+    presentes_b = cjto_card(b.presentes); //quantos herois ha na base
+
+    printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
+    printf("(%2d/%2d) FILA ", presentes_b, lotacao_b);
+    fila_imprime(b.espera);
+
+    //enquanto a base tiver vagas 
+    while (presentes_b <= lotacao_b && fila_tamanho(b.espera) == 0) {
+        fila_retira(b.espera); //tira da fila de espera
+        cjto_insere(b.presentes, heroi);
+        presentes_b ++;
+
+        //cria evento entra
+        agenda_evento(m, tempo, ENTRA, heroi, base);
+        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
+    }
+}
+
+
 //ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
 //IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
 //DEIXAR POR ULTIMO TBM
@@ -294,32 +325,8 @@ void fim(struct mundo *m) {
     destroi_mundo(m);
 }
 
+
 /*
-//EVENTO QUE AVISA O PORTEIRO DA BASE
-//SE INSERIR NA BASE, CRIA O EVENTO ENTRA
-void avisa(struct mundo *m, int tempo, int base) { //TEM QUE PASSAR HEROI COMO PARAMETRO???
-
-    struct base b;
-    int lotacao_b, heroi_b, presentes_b;
-    
-    //base do evento 
-    b = m->bases[base];
-    
-    lotacao_b = b.lotacao;
-    presentes_b = cjto_card(b.presentes);
-
-    printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
-    printf("(%2d/%2d) FILA ", presentes, lotacao);
-
-    //enquanto a base tiver vagas 
-    while (presentes_b <= lotacao_b && fila_tamanho(b.espera) == 0) {
-
-    }
-
-    printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
-}
-
-
 //HEROI EH ADMITIDO E ENTRA NA BASE
 //CRIA O EVENTO SAI
 void entra(struct mundo *m, int tempo, int heroi, int base) {

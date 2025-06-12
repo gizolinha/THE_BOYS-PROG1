@@ -135,6 +135,10 @@ void espera(struct mundo *m, int tempo, int heroi, int base);
 //CRIA O EVENTO VIAJA
 void desiste(struct mundo *m, int tempo, int heroi, int base);
 
+//EVENTO QUE AVISA O PORTEIRO DA BASE
+//SE INSERIR NA BASE, CRIA O EVENTO ENTRA
+void avisa(struct mundo *m, int tempo, int base, int heroi);
+
 //ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
 //IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
 //DEIXAR POR ULTIMO TBM

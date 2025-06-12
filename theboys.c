@@ -34,6 +34,9 @@ int main () {
           case DESISTE:
               desiste(&m, ev->tempo, ev->info1, ev->info2);
               break;
+          case AVISA:
+              avisa(&m, ev->tempo, ev->info1, ev->info2);
+              break;
           case FIM:
               fim(&m);
               fim_simulacao = 1;
