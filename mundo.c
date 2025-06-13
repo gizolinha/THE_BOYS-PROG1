@@ -149,7 +149,7 @@ struct base cria_base(struct mundo *m, int id) {
     struct base b;
 
     b.id = id;
-    b.lotacao = aleat(3,10);
+    b.lotacao = 3;
     b.presentes = cjto_cria(N_HEROIS - 1);
     b.espera = fila_cria();
     b.coordenadas.x = aleat(0, m->n_tamanho_mundo);
@@ -216,7 +216,7 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
     //tamanho da fila de espera
     fila_espera = fila_tamanho(b.espera);
     //lotação max da base
-    lotacao_b = b.lotacao;
+    lotacao_b = 3;
 
     //atualiza a abse do heroi
     m->herois[heroi].base = base;
@@ -287,8 +287,10 @@ void avisa(struct mundo *m, int tempo, int base, int heroi) {
     //base do evento 
     b = m->bases[base];
     
-    lotacao_b = b.lotacao; //lotacao maxima
+    lotacao_b = 3; //lotacao maxima
     presentes_b = cjto_card(b.presentes); //quantos herois ha na base
+
+
 
     printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
     printf("(%2d/%2d) FILA [ ", presentes_b, lotacao_b);
@@ -296,7 +298,7 @@ void avisa(struct mundo *m, int tempo, int base, int heroi) {
     printf("]\n");
 
     //enquanto a base tiver vagas 
-    while (presentes_b <= lotacao_b && fila_tamanho(b.espera) == 0) {
+    while (presentes_b <= lotacao_b && (fila_tamanho(b.espera) != 0)) {
         fila_retira(b.espera); //tira da fila de espera
         cjto_insere(b.presentes, heroi);
         presentes_b ++;
@@ -320,7 +322,7 @@ void entra(struct mundo *m, int tempo, int heroi, int base) {
     h = m->herois[heroi];
 
     presentes_b = cjto_card(b.presentes);
-    lotacao_b = b.lotacao;
+    lotacao_b = 3;
 
     permanencia_b = 15 + (h.paciencia * aleat(1, 20));
 
