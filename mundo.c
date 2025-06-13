@@ -79,6 +79,7 @@ struct mundo cria_mundo() {
     m.relogio = T_INICIO;
 
     //cria e inicializa vetor de herois usando a cria_heroi
+    //uso de vetores estáticos pois não serão alterados
     for(int i = 0; i < m.n_herois; i++)
         m.herois[i] = cria_heroi(i);
 
@@ -149,7 +150,7 @@ struct base cria_base(struct mundo *m, int id) {
     struct base b;
 
     b.id = id;
-    b.lotacao = 3;
+    b.lotacao = aleat(3,10);
     b.presentes = cjto_cria(N_HEROIS - 1);
     b.espera = fila_cria();
     b.coordenadas.x = aleat(0, m->n_tamanho_mundo);
@@ -163,9 +164,10 @@ struct missao cria_missao(struct mundo *m, int id) {
 
     struct missao mi;
 
-    //testar interior da funcao depois
     mi.id = id;
     mi.habilidades_req = cjto_aleat(aleat(6,10), N_HABILIDADES -1);
+    mi.tentativas = 0;
+    mi.cumpridas = 0;
 
     mi.coordenadas.x = aleat(0,m->n_tamanho_mundo);
     mi.coordenadas.y = aleat(0,m->n_tamanho_mundo);
@@ -200,7 +202,7 @@ void eventos_iniciais(struct mundo *m) {
 //eventos da simulacao
 
 //EVENTO DE CHEGADA DO HEROI NA BASE
-//CRIA EVENTO AVISA, ESPERA OU DESISTE
+//CRIA EVENTO ESPERA OU DESISTE
 void chega(struct mundo *m, int tempo, int heroi, int base) {
 
     struct heroi h;
@@ -216,7 +218,7 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
     //tamanho da fila de espera
     fila_espera = fila_tamanho(b.espera);
     //lotação max da base
-    lotacao_b = 3;
+    lotacao_b = b.lotacao;
 
     //atualiza a abse do heroi
     m->herois[heroi].base = base;
@@ -247,8 +249,8 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
 //ERRO AO IKNSERIR NA FILA DA BASE
 void espera(struct mundo *m, int tempo, int heroi, int base) {
     //alocar dinamicamente para evitar erro no free (destroi mundo)
-    //int *ptr_heroi = malloc(sizeof(int));
-    int *ptr_heroi = &heroi;
+    int *ptr_heroi = malloc(sizeof(int));
+    *ptr_heroi = heroi;
 
     printf("%6d: ESPERA HEROI %2d BASE %d ", tempo, heroi, base);
     printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); 
@@ -257,9 +259,46 @@ void espera(struct mundo *m, int tempo, int heroi, int base) {
     fila_insere(m->bases[base].espera, ptr_heroi);
 
     //cria evento avisa para o porteiro
-    agenda_evento(m, tempo, AVISA, base, heroi);
+    agenda_evento(m, tempo, AVISA, heroi, base);
 
 }
+
+//EVENTO QUE AVISA O PORTEIRO DA BASE
+//SE INSERIR NA BASE, CRIA O EVENTO ENTRA
+void avisa(struct mundo *m, int tempo, int heroi, int base) { 
+
+    struct base b;
+    int lotacao_b, presentes_b;
+
+    //uso de um ponteiro auxliar para evitar vazamento da alocação de heroi na espera
+    void *aux = NULL;
+    
+    //base do evento 
+    b = m->bases[base];
+    
+    lotacao_b = b.lotacao; //lotacao maxima
+    presentes_b = cjto_card(b.presentes); //quantos herois ha na base
+
+
+    printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
+    printf("(%2d/%2d) FILA [ ", presentes_b, lotacao_b);
+    fila_imprime(b.espera);
+    printf("]\n");
+
+    //enquanto a base tiver vagas 
+    while (presentes_b <= lotacao_b && (fila_tamanho(b.espera) != 0)) {
+        aux = fila_retira(b.espera); //tira da fila de espera
+        if(aux)
+            free(aux);
+        cjto_insere(b.presentes, heroi);
+        presentes_b ++;
+
+        //cria evento entra
+        agenda_evento(m, tempo, ENTRA, heroi, base);
+        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
+    }
+}
+
 
 //EVENTO CASO O HEROI DESISTA  DE ESPERAR NA FILA DA BASE
 //CRIA O EVENTO VIAJA
@@ -277,38 +316,6 @@ void desiste(struct mundo *m, int tempo, int heroi, int base) {
 }
 
 
-//EVENTO QUE AVISA O PORTEIRO DA BASE
-//SE INSERIR NA BASE, CRIA O EVENTO ENTRA
-void avisa(struct mundo *m, int tempo, int base, int heroi) { 
-
-    struct base b;
-    int lotacao_b, presentes_b;
-    
-    //base do evento 
-    b = m->bases[base];
-    
-    lotacao_b = 3; //lotacao maxima
-    presentes_b = cjto_card(b.presentes); //quantos herois ha na base
-
-
-
-    printf("%6d: AVISA PORTEIRO BASE %d ", tempo, base);
-    printf("(%2d/%2d) FILA [ ", presentes_b, lotacao_b);
-    fila_imprime(b.espera);
-    printf("]\n");
-
-    //enquanto a base tiver vagas 
-    while (presentes_b <= lotacao_b && (fila_tamanho(b.espera) != 0)) {
-        fila_retira(b.espera); //tira da fila de espera
-        cjto_insere(b.presentes, heroi);
-        presentes_b ++;
-
-        //cria evento entra
-        agenda_evento(m, tempo, ENTRA, heroi, base);
-        printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, base, heroi);
-    }
-}
-
 //HEROI EH ADMITIDO E ENTRA NA BASE
 //CRIA O EVENTO SAI
 void entra(struct mundo *m, int tempo, int heroi, int base) {
@@ -322,7 +329,7 @@ void entra(struct mundo *m, int tempo, int heroi, int base) {
     h = m->herois[heroi];
 
     presentes_b = cjto_card(b.presentes);
-    lotacao_b = 3;
+    lotacao_b = b.lotacao;
 
     permanencia_b = 15 + (h.paciencia * aleat(1, 20));
 
@@ -352,7 +359,7 @@ void sai(struct mundo *m, int tempo, int heroi, int base) {
     agenda_evento(m, tempo, VIAJA, heroi, prox_base);
 
     //cria evento avisa
-    agenda_evento(m, tempo, AVISA, base, heroi);
+    agenda_evento(m, tempo, AVISA, heroi, base);
 
     printf("%6d: SAI HEROI %2d BASE %d", tempo, heroi, base);
     printf(" (%2d/%2d)\n", cjto_card(b.presentes), b.lotacao); //cjtocard informa o numero de itens do conjunto
@@ -378,16 +385,32 @@ void fim(struct mundo *m) {
     destroi_mundo(m);
 }
 
-
-/*
 //HEROI VIAJA PARA OUTRA BASE
 //CRIA EVENTO CHEGA
-void viaja(struct mundo *m, int tempo, inte heroi, int base) {
+void viaja(struct mundo *m, int tempo, int heroi, int base) {
 
-    printf("%6d: VIAJA HEROI %2d BASE %d BASE %d", tempo, heroi, heroi.base, base);
-    printf("DIST %d VEL %d CHEGA %d\n", distancia, heroi.velocidade, tempo + duracao);
+    struct base b_atual, b_prox;
+    struct heroi h;
+    int duracao, distancia;
+
+    //heroi do evento
+    h = m->herois[heroi];
+    //base atual do heroi
+    b_atual = m->bases[h.base];
+    //base que  heroi vai viajar
+    b_prox = m->bases[base];          
+    
+    distancia = calcula_distancia(b_atual.coordenadas, b_prox.coordenadas);
+    duracao = (distancia / h.velocidade);
+
+    //cria evento chega
+    agenda_evento(m, tempo + duracao, CHEGA, heroi, base);
+
+    printf("%6d: VIAJA HEROI %2d BASE %d BASE %d", tempo, heroi, h.base, base);
+    printf("DIST %d VEL %d CHEGA %d\n", distancia, h.velocidade, tempo + duracao);
 }
 
+/*
 //HEROI MORRE QUANDO USA O COMPOSTO V
 //CRIA EVENTO AVISA???
 void morre(struct mundo *m, int tempo, int heroi, int missao) {
