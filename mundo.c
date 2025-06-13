@@ -247,8 +247,8 @@ void chega(struct mundo *m, int tempo, int heroi, int base) {
 //ERRO AO IKNSERIR NA FILA DA BASE
 void espera(struct mundo *m, int tempo, int heroi, int base) {
     //alocar dinamicamente para evitar erro no free (destroi mundo)
-    int *ptr_heroi = malloc(sizeof(int));
-    *ptr_heroi = heroi;
+    //int *ptr_heroi = malloc(sizeof(int));
+    int *ptr_heroi = &heroi;
 
     printf("%6d: ESPERA HEROI %2d BASE %d ", tempo, heroi, base);
     printf("(%2d)\n", fila_tamanho(m->bases[base].espera)); 
@@ -329,8 +329,34 @@ void entra(struct mundo *m, int tempo, int heroi, int base) {
     //cria evento sai
     agenda_evento(m, (tempo + permanencia_b), SAI, heroi, base);
 
-    printf("%6d: ENTRA HEROI %2d BASE %d", tempo, heroi, base);
+    printf("%6d: ENTRA HEROI %2d BASE %d ", tempo, heroi, base);
     printf("(%2d/%2d) SAI %d\n", presentes_b, lotacao_b, (tempo + permanencia_b));
+}
+
+//HEROI SAI DA BASE
+//CRIA EVENTO VIAJA
+//CRIA EVENTO AVISA
+void sai(struct mundo *m, int tempo, int heroi, int base) {
+
+    struct base b;
+    int prox_base;
+
+    b = m->bases[base];
+
+    //tira heroi da base atual
+    cjto_retira(b.presentes, heroi);
+    //prox base para que o heroi irá viajar
+    prox_base = aleat(0, m->n_bases-1);
+
+    //cria evento viaja
+    agenda_evento(m, tempo, VIAJA, heroi, prox_base);
+
+    //cria evento avisa
+    agenda_evento(m, tempo, AVISA, base, heroi);
+
+    printf("%6d: SAI HEROI %2d BASE %d", tempo, heroi, base);
+    printf(" (%2d/%2d)\n", cjto_card(b.presentes), b.lotacao); //cjtocard informa o numero de itens do conjunto
+
 }
 
 
@@ -353,19 +379,7 @@ void fim(struct mundo *m) {
 }
 
 
-
-
 /*
-//HEROI SAI DA BASE
-//CRIA EVENTO VIAJA
-//CRIA EVENTO AVISA
-void sai(struct mundo *m, int tempo, int heroi, int base) {
-
-    printf("%6d: SAI HEROI %2d BASE %d", tempo, heroi, base);
-    printf("(%2d/%2d)\n", cjto_card(base.presentes, b.lotacao)); //cjtocard informa o numero de itens do conjunto
-
-}
-
 //HEROI VIAJA PARA OUTRA BASE
 //CRIA EVENTO CHEGA
 void viaja(struct mundo *m, int tempo, inte heroi, int base) {

@@ -143,6 +143,11 @@ void avisa(struct mundo *m, int tempo, int base, int heroi);
 //CRIA O EVENTO SAI
 void entra(struct mundo *m, int tempo, int heroi, int base);
 
+//HEROI SAI DA BASE
+//CRIA EVENTO VIAJA
+//CRIA EVENTO AVISA
+void sai(struct mundo *m, int tempo, int heroi, int base);
+
 //ENCERRA A SIMULACAO DO MUNDO E IMPRIME AS ESTATISTICAS
 //IMPRIME TODOS OS HEROIS E XP ADQUIRIDAS
 //DEIXAR POR ULTIMO TBM
